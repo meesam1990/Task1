@@ -17,6 +17,7 @@ mkdir /mnt/data
 sudo docker run -d -p 27017:27017 -v /mnt/data:/data/db mongo
 
 #Monitor processes
+touch ~/logs.txt
 touch ~/process.sh
 chmod +x ~/process.sh
 
@@ -25,11 +26,11 @@ cat <<EOT >> ~/process.sh
 PID1=$(/bin/ps aux | grep -v grep | grep "tomcat" | awk '{print $2}')
 PID2=$(/bin/ps aux | grep -v grep | grep "mongo" | awk '{print $2}')
 
-err=0
+#err=0
 
 if [ "x$PID1" == "x" ]; then
         # PROCESS tomcat died
-        err=$(( err + 1 ))
+#        err=$(( err + 1 ))
         echo "$(date) - PROCESS tomcat8 is down" >> ~/logs.txt;
 else
         echo "$(date) - PROCESS tomcat8 is Running" >> ~/logs.txt;
@@ -37,16 +38,12 @@ fi
 
 if [ "x$PID2" == "x" ]; then
         # PROCESS mongo died
-        err=$(( err + 2 ))
+#        err=$(( err + 2 ))
         echo "$(date) - PROCESS mongo is down" >> ~/logs.txt;
 else
         echo "$(date) - PROCESS mongo is Running" >> ~/logs.txt;
 fi
 EOT
-
-crontab <<EOF
-* * * * * /bin/bash /root/process.sh
-EOF
 
 #Configure awscli
 
@@ -57,5 +54,7 @@ mkdir ~/.aws/ && touch ~/.aws/config && echo "[default]" >> ~/.aws/config && ech
 aws s3api create-bucket --bucket basware-bucket --region ap-south-1 --create-bucket-configuration LocationConstraint=ap-south-1
 
 crontab <<EOF
+* * * * * /bin/bash /root/process.sh
 */60 * * * * aws s3 cp /root/logs.txt s3://basware-bucket/Logs-`date +"%m-%d-%y-%T"`.txt --region ap-south-1
 EOF
+
