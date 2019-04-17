@@ -51,10 +51,10 @@ sudo apt-get install awscli -y
 
 mkdir ~/.aws/ && touch ~/.aws/config && echo "[default]" >> ~/.aws/config && echo "aws_access_key_id=" >> ~/.aws/config && echo "aws_secret_access_key=" >> ~/.aws/config && echo "region=ap-south-1" >> ~/.aws/config && echo "output=json" >> ~/.aws/config
 
-aws s3api create-bucket --bucket basware-bucket --region ap-south-1 --create-bucket-configuration LocationConstraint=ap-south-1
+aws s3api create-bucket --bucket syed-bucket --region ap-south-1 --create-bucket-configuration LocationConstraint=ap-south-1
 
 crontab <<EOF
 * * * * * /bin/bash /root/process.sh
-*/60 * * * * aws s3 cp /root/logs.txt s3://basware-bucket/Logs-`date +"%m-%d-%y-%T"`.txt --region ap-south-1
+*/60 * * * * aws s3 cp /root/logs.txt s3://syed-bucket/Logs-`date +"%m-%d-%y-%T"`.txt --region ap-south-1
 EOF
 
